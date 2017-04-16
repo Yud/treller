@@ -1,0 +1,11 @@
+{
+  "app/api/v1/*.js": {
+    "type": "ndpoint",
+    "alternate": "test/api/v1/{}.js"
+  },
+  "test/api/v1/*.js": {
+    "type": "test",
+    "dispatch": "mocha -R dot {file}",
+    "alternate": "app/api/v1/{}.js"
+  }
+}
