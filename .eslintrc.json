@@ -4,8 +4,9 @@
         "react",
         "jsx-a11y",
         "import"
-    ]
+    ],
      "globals": {
-        "describe": true
+        "describe": true,
+        "it": true
     }
 }
