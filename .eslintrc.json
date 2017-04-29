@@ -5,6 +5,9 @@
         "jsx-a11y",
         "import"
     ],
+    "rules": {
+      "no-console": 0
+    },
      "globals": {
         "describe": true,
         "it": true
