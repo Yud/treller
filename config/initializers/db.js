@@ -1,20 +1,20 @@
-const mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
 
-const db = mongoose.connection;
+const globals = require('~/config/globals');
 
-const initilize = () => {
+const initilize = (app) => {
   const promise = new Promise((resolve, reject) => {
     console.log('Connecting to database...');
 
-    mongoose.connect(process.env.DB_URI);
+    MongoClient.connect(process.env.DB_URI, (err, db) => {
+      if (err) {
+        console.log('Could not connect to database');
+        return reject(err);
+      }
 
-    db.on('error', () => {
-      reject('Could not connect to database');
-    });
-
-    db.once('open', () => {
-      console.log('Connected to database!')
-      resolve();
+      console.log('Connected to database!');
+      globals.set('db', db);
+      return resolve();
     });
   });
 

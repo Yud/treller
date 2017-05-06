@@ -60,3 +60,5 @@ typings/
 
 Vagrantfile
 .vagrant/
+.vscode/
+.DS_Store
