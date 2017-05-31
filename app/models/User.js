@@ -8,8 +8,8 @@ const db = globals.get('db');
 db.createCollection('users', 
   {
     validator: { $or: [
-      { password: { $type: 'string' } },
-      { email: { $type: 'string' } }
+      { password: { $type: 'string', $exists: true } },
+      { email: { $type: 'string', $exists: true } }
     ] }
   },
   (err, results) => {
@@ -31,17 +31,30 @@ db.collection('users').createIndex(
 );
 
 function UserObject(args) {
-  this.password = args.password;
-  this.email = args.email;
-  this.id = args._id;
-  const self = this;
+  let password = args.password;
+  const email = args.email;
+  const id = args._id;
 
-  this.validPassword = (_password) => {
-    return bcrypt.compareSync(_password, self.password);
+  const validPassword = (_password) => {
+    return bcrypt.compareSync(_password, password);
   };
 
-  this.generateHash = (_password) => {
+  const generateHash = (_password) => {
     return bcrypt.hashSync(_password, bcrypt.genSaltSync(8), null);
+  };
+
+  const getPassword = () => password;
+  const setPassword = (_password) => {
+    password = _password;
+  };
+
+  return {
+    id,
+    email,
+    validPassword,
+    generateHash,
+    getPassword,
+    setPassword
   };
 }
 

@@ -21,7 +21,7 @@ const passportStrategies = (passport) => {
     usernameField: 'email',
     passwordField: 'password'
   }, (email, password, done) => {
-    User.collection().findOne({ email: email }, (err, doc) => {
+    User.collection().findOne({ email }, (err, doc) => {
       if (err) {
         return err;
       }
@@ -50,10 +50,10 @@ const passportStrategies = (passport) => {
     passReqToCallback: true
   }, (req, email, password, done) => {
     let newUser = User.build({ email });
-    newUser.password = newUser.generateHash(password);
+    newUser.setPassword(newUser.generateHash(password));
 
     User.collection().insertOne({
-      password: newUser.password,
+      password: newUser.getPassword(),
       email: newUser.email
     }, (dbErr, userDoc) => {
       if (dbErr) {
