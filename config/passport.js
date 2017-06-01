@@ -5,7 +5,6 @@ const User = require('~/app/models/User');
 const passportStrategies = (passport) => {
   // used to serialize the user for the session
   passport.serializeUser((user, done) => {
-    console.log(user.id)
     done(null, user.id);
   });
 

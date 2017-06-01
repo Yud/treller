@@ -19,6 +19,16 @@ db.createCollection('boards',
   }
 );
 
-const Board = {};
+const Board = () => {
+  const collection = () => db.collection('boards');
+  const findByUser = (id) => {
+    return collection().find({ users: { user_id: id } }).toArray();
+  };
 
-module.exports = Board;
+  return {
+    collection,
+    findByUser
+  }
+};
+
+module.exports = Board();

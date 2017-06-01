@@ -7,7 +7,8 @@
     ],
     "rules": {
       "no-console": 0,
-      "comma-dangle": ["error", "never"]
+      "comma-dangle": ["error", "never"],
+      "no-underscore-dangle": "allow"
     },
      "globals": {
         "describe": true,
