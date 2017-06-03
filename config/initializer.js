@@ -15,8 +15,6 @@ const init = (app) => {
   const promise = new Promise((resolve, reject) => {
     console.log('Starting server...');
     Promise.all(runInitializers(app)).then(() => {
-      app.listen(process.env.PORT);
-      console.log(`Server started on port ${process.env.PORT}`);
       return resolve();
     }).catch((reason) => {
       console.log('An error occured during initializetion process:');

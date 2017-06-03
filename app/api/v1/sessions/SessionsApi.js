@@ -2,36 +2,50 @@ const express = require('express');
 
 const router = express.Router([]);
 
-const passport = require('passport');
+const User = require('~/app/models/User');
 
-require('~/config/passport')(passport);
+const jwt = require('jsonwebtoken');
 
 const endpoint = function sessionsEndpoint() {
-  router.post('/login',
-    passport.authenticate('local-signin', { failWithError: true }),
-    // If this function gets called, authentication was successful.
-    (req, res) => res.send(req.user),
-    // If this function gets called, login failed & an error will be returned
-    (err, req, res, next) => {
-      return res.json(err);
-    }
-  );
+  router.post('/login', (req, res) => {
+    User.collection().findOne({ email: req.body.email }).then((doc) => {
+      if (!doc) {
+        return res.status(404).send();
+      }
 
-  router.post('/logout', (req, res) => {
-    req.logout();
-    res.send(200);
+      const user = User.build(doc);
+
+      if (!user.validPassword(req.body.password)) {
+        return res.status(500).send({ message: 'Incorrect password.' });
+      }
+
+      const payload = { id: user.id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET);
+      return res.send({ token });
+    }).catch((err) => {
+      console.log(err);
+    });
   });
 
-  router.post('/signup',
-    passport.authenticate('local-signup', { failWithError: true }),
-    // If this function gets called, signup was successful.
-    // Otherwise, Passport will respond with a 401 Unauthorized status.
-    (req, res) => res.send(req.user),
-    // If this function gets called, signup failed & an error will be returned
-    (err, req, res, next) => {
-      return res.json(err);
-    }
-  );
+  router.post('/signup', (req, res) => {
+    const newUser = User.build({ email: req.body.email });
+    newUser.setPassword(newUser.generateHash(req.body.password));
+
+    User.collection().insertOne({
+      password: newUser.getPassword(),
+      email: newUser.email
+    }).then((userDoc) => {
+      const payload = { id: userDoc.insertedId };
+      const token = jwt.sign(payload, process.env.JWT_SECRET);
+      return res.send({ token });
+    }).catch((dbErr) => {
+      console.log(dbErr);
+      if (dbErr.name === 'MongoError' && dbErr.code === 11000) {
+        return res.status(500).send({ message: 'Email already taken' });
+      }
+      throw dbErr;
+    });
+  });
 
   return router;
 };
