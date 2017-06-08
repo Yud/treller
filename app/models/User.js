@@ -30,7 +30,7 @@ db.collection('users').createIndex(
   }
 );
 
-function UserObject(args) {
+function UserFactory(args) {
   let password = args.password;
   const email = args.email;
   const id = args._id;
@@ -64,7 +64,7 @@ const User = {
   },
 
   build(args) {
-    let newUser = new UserObject(args);
+    let newUser = new UserFactory(args);
     return newUser;
   }
 };
