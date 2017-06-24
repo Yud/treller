@@ -9,7 +9,17 @@ db.createCollection('boards',
   {
     validator: { $or: [
       { name: { $type: 'string', $exists: true } },
-      { users: [{ $user_id: 'ObjectId', $role: 'string', $exists: true }] }
+      { users: [{
+        $user_id: 'ObjectId',
+        $role: 'string',
+        $exists: true }]
+      },
+      { tasks: [{
+        $_id: { $type: 'ObjectID', $unique: true, $exists: true },
+        $assignedTo: { $type: 'ObjectId' },
+        $name: { $type: 'string', $exists: true },
+        $description: { $type: 'text' } }]
+      }
     ] }
   },
   (err, results) => {
@@ -20,6 +30,8 @@ db.createCollection('boards',
     return results;
   }
 );
+
+db.collection('boards').updateMany({ tasks: { $exists: false } }, { $set: { tasks: [] } });
 
 function BoardFactory(args) {
   const name = args.name;

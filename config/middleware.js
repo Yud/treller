@@ -45,6 +45,7 @@ const requireUser = (req, res, next) => {
 const initilizeMiddleware = (app) => {
   app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
   app.use(bodyParser.json());
+  //app.use(bodyParser.urlencoded({extended: true}));
   app.use(getUserIdFromToken);
   app.use(morgan('dev'));
 };
